@@ -3,6 +3,8 @@
 
 # compiled python files
 *.pyc
+build/
+.coverage
 
 # backups and swap files
 *-bak
@@ -13,5 +15,11 @@
 # logs
 *.log
 
-# your virtualenv
-venv/
+# other shenanigans
+.idea
+*.iml
+*.xml
+*~
+
+# venv
+.python-version
