@@ -19,7 +19,6 @@ build/
 .idea
 *.iml
 *.xml
-*~
 
 # venv
 .python-version
