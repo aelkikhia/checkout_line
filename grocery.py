@@ -1,23 +1,36 @@
 
 import sys
 
-from collections import deque
-
-"""
-Type A always chooses shortest line, if tie, lowest register number
-
-Type B always chooses  empty line or else be behind the customer with the
-fewest number of items
-
-Customers just finishing checking out do not count as being in line
-(for either kind of customer).
-
-arrival tie: fewest items, if tie on item num A then B
-
-"""
+from models.models import GroceryStore
 
 
 def grocery(argv):
+    """
+    Type A always chooses shortest line, if tie, lowest register number
+
+    Type B always chooses  empty line or else be behind the customer with the
+    fewest number of items
+
+    Customers just finishing checking out do not count as being in line
+    (for either kind of customer).
+
+    arrival tie: fewest items, if tie on item num A then B
+
+    """
+
+    num_registers, customers = extract_data_from_file(argv)
+
+    # sort customers
+    customers.sort(key=lambda s: (s[1], s[2], s[0]))
+
+    # create registers
+    store = GroceryStore(num_registers)
+    store.init_registers()
+    store.process_customers(customers)
+    print(store.completion_time)
+
+
+def extract_data_from_file(argv):
     """
     takes text file input first line is number of registers. All following
     lines are separated into three space divided columns in the order of
@@ -38,41 +51,7 @@ def grocery(argv):
             line = line.split()
             customers.append(line)
     in_file.close()
-
-    # set time variable
-    time = 0
-
-    # sort customers
-    customers.sort(key=lambda s: (s[1], s[2], s[0]))
-
-    # create registers
-    registers = create_registers(num_registers)
-
-    print (registers)
-    print (customers)
-
-
-def create_registers(num_registers):
-    """
-    returns data structure model for registers using a dictionary of deques
-    :param num_registers: int
-    :return: dict
-    """
-    return dict.fromkeys(range(1, 10), deque)
-
-
-def checkout(num_items, rate=1):
-    """
-    checkout takes in number of items and the rate in which they are processed
-    side note: put this in a function to save time in refactoring later.
-    chose not to make a factory since memory could be factor in an
-    large input file. interpreter will optimize this code
-
-    :param num_items: number of items (int)
-    :param rate: rate coefficient for processing each item (int)
-    :return: checkout time in minutes(int)
-    """
-    return num_items * rate
+    return num_registers, customers
 
 if __name__ == "__main__":
     grocery(sys.argv[1])
