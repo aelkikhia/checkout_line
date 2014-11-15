@@ -4,11 +4,11 @@ import unittest
 
 def suite():
     suites = unittest.TestSuite()
-    suites.addTest(WhenTestingDefaultCards())
+    suites.addTest(WhenTestingCheckout())
     return suites
 
 
-class WhenTestingDefaultCards(unittest.TestCase):
+class WhenTestingCheckout(unittest.TestCase):
 
     def setUp(self):
         pass

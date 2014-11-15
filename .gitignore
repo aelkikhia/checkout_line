@@ -5,15 +5,15 @@
 *.pyc
 build/
 .coverage
+.tox/
+checkout_test.egg-info/
+
 
 # backups and swap files
 *-bak
 *.bak
 *.swp
 *~
-
-# logs
-*.log
 
 # other shenanigans
 .idea
