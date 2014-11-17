@@ -1,33 +1,15 @@
 
 import sys
 
-from models.models import GroceryStore
+from models.models import Registers
 
 
 def grocery(argv):
-    """
-    Type A always chooses shortest line, if tie, lowest register number
-
-    Type B always chooses  empty line or else be behind the customer with the
-    fewest number of items
-
-    Customers just finishing checking out do not count as being in line
-    (for either kind of customer).
-
-    arrival tie: fewest items, if tie on item num A then B
-
-    """
-
-    num_registers, customers = extract_data_from_file(argv)
-
+    num_registers, num_customers, customers = extract_data_from_file(argv)
     # sort customers
-    customers.sort(key=lambda s: (s[1], s[2], s[0]))
-
-    # create registers
-    store = GroceryStore(num_registers)
-    store.init_registers()
-    store.process_customers(customers)
-    print(store.completion_time)
+    store = Registers(num_registers, num_customers, customers)
+    store.process_customers()
+    # store.completion_time()
 
 
 def extract_data_from_file(argv):
@@ -42,16 +24,21 @@ def extract_data_from_file(argv):
     with open(sys.argv[1], 'r') as in_file:
         # get num registers
         num_registers = int(in_file.readline())
-
-        customers = []
+        num_customers = 0
+        customers = dict()
         # store and order the rest of the lines in the file...
         #TODO: generator seems out of the question.
         #TODO: data might not be in sequential order
         for line in in_file:
-            line = line.split()
-            customers.append(line)
+            customer = line.split()
+            if int(customer[1]) in customers:
+                customers[int(customer[1])].append([customer[2], customer[0]])
+            else:
+                customers[int(customer[1])] = [[customer[2], customer[0]]]
+            num_customers += 1
     in_file.close()
-    return num_registers, customers
+
+    return num_registers, num_customers, customers
 
 if __name__ == "__main__":
     grocery(sys.argv[1])
