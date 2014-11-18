@@ -1,8 +1,8 @@
 
 import unittest
-
 from collections import deque
-from models.models import Registers
+
+from grocery.models.models import Registers
 
 
 def suite():
@@ -66,13 +66,12 @@ class WhenTestingRegister(unittest.TestCase):
                              {'rate': 2, 'pop_time': -1, 'line': deque([])})
 
     def test_update_register_not_time_to_pop_customer(self):
-        self.store.time = 13
+        self.store.time = 11
         self.store.registers[0] = dict({'rate': 2, 'pop_time': 12,
                                         'line': deque([2])})
         self.store._update_register(self.store.registers[0])
         self.assertDictEqual(self.store.registers[0],
                              {'rate': 2, 'pop_time': 12, 'line': deque([2])})
-
 
 if __name__ == '__main__':
     unittest.main()

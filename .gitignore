@@ -6,7 +6,7 @@
 build/
 .coverage
 .tox/
-checkout_test.egg-info/
+grocery.egg-info/
 
 
 # backups and swap files

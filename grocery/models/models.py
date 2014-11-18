@@ -27,9 +27,8 @@ class Registers(object):
         print("Finished at: t={0} minutes".format(self.time))
 
     def process_customers(self):
-        """ Processes the customers
-        :return:
-        """
+        """ Processes the customers """
+
         print(self.customers)
 
         while self.time != 8:
@@ -38,7 +37,6 @@ class Registers(object):
             print ("Time {0}".format(self.time))
             print (self.registers)
             if self.time in self.customers:
-                print(self.customers[self.time])
                 for customer in self.customers[self.time]:
                     self._queue_customer(customer)
             self.time += 1
@@ -51,7 +49,6 @@ class Registers(object):
         :param customer: (array)
         """
 
-        print ("queue customer")
         # first come first serve customers should be ordered,
         # A takes precedence over B
         # find empty and shortest lines
@@ -63,7 +60,7 @@ class Registers(object):
             self.registers[short_line]['line'].appendleft(customer[0])
             # update pop_time for register if register is empty
             if length == 0:
-                self._update_register(self.registers[short_line])
+                self._reset_pop_time(self.registers[short_line])
         else:
             # criterion for queueing up 'B' type
             least_items = self._find_last_customer_with_least_items()
@@ -71,7 +68,6 @@ class Registers(object):
 
     def _init_registers(self):
         """ Hidden method to set up the cash registers including trainee """
-        print ("initialize registers")
         for x in range(0, self.num_registers - 1):
             self.registers.append(create_register())
         # add trainee register
@@ -81,16 +77,20 @@ class Registers(object):
         """ Updates register based on time
         :param register: (dict)
         """
-        print ("update register")
         if register['pop_time'] == self.time:
             register['line'].pop()
             self.num_customers -= 1
+            self._reset_pop_time(register)
 
+    def _reset_pop_time(self, register):
+        """ Resets pop time if needed
+        :param register: (dict)
+        """
         if len(register['line']) == 0:
             register['pop_time'] = -1
         else:
             register['pop_time'] = \
-                register['rate'] * int(register['line'][-1]) + self.time
+                register['rate'] * register['line'][-1] + self.time
 
     def _update_registers(self):
         """
@@ -99,7 +99,6 @@ class Registers(object):
         finished looping
         :return:
         """
-        print ("update registers")
         for register in self.registers:
             self._update_register(register)
 
@@ -107,7 +106,6 @@ class Registers(object):
         """ Finds the first shortest line
         :return: (int, int)
         """
-        print ("finding shortest line")
         length, shortest_line = min((len(register['line']), idx)
                                     for (idx, register)
                                     in enumerate(self.registers))
@@ -117,7 +115,6 @@ class Registers(object):
         """ finds line whose last customer has the fewest items
         :return: (int)
         """
-        print ("finding least items")
         length, least_items = min((register['line'][0], idx)
                                   for (idx, register)
                                   in enumerate(self.registers))

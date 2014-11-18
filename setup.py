@@ -9,7 +9,7 @@ except ImportError:
     from setuptools import setup, find_packages
 
 setup(
-    name='checkout_test',
+    name='grocery',
     version='0.1',
     description='checkout line at a grocery store test problem',
     author='Taz Elkikhia',

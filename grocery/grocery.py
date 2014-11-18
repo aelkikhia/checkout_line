@@ -1,7 +1,6 @@
-
 import sys
 
-from models.models import Registers
+from grocery.models.models import Registers
 
 
 def grocery(argv):
@@ -32,9 +31,10 @@ def extract_data_from_file(argv):
         for line in in_file:
             customer = line.split()
             if int(customer[1]) in customers:
-                customers[int(customer[1])].append([customer[2], customer[0]])
+                customers[int(customer[1])].append([int(customer[2]),
+                                                    customer[0]])
             else:
-                customers[int(customer[1])] = [[customer[2], customer[0]]]
+                customers[int(customer[1])] = [[int(customer[2]), customer[0]]]
             num_customers += 1
     in_file.close()
 

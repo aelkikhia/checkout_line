@@ -1,9 +1,1 @@
-build/
-.coverage
-*.pyc
-.idea
-*.iml
-*.xml
-*.DS_Store*
-*~
-.python-version
+ez_setup
