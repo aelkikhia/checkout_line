@@ -2,7 +2,7 @@
 import unittest
 from collections import deque
 
-from grocery.models.models import Registers
+from grocery.registers import Registers
 
 
 def suite():
@@ -11,50 +11,29 @@ def suite():
     return suites
 
 
-class WhenTestingGroceryStore(unittest.TestCase):
-
-    def setUp(self):
-        self.customers = {'1': [['2', 'A']], '2': [['1', 'A']]}
-        self.num_customers = 2
-        self.num_registers = 1
-        self.registers = None
-
-    # def test_example_1(self):
-    #     self.assertEqual('', 'Finished at: t=7 minutes')
-    #
-    # def test_example_2(self):
-    #     self.assertEqual('', 'Finished at: t=13 minutes')
-    #
-    # def test_example_3(self):
-    #     self.assertEqual('', 'Finished at: t=6 minutes')
-    #
-    # def test_example_4(self):
-    #     self.assertEqual('', 'Finished at: t=9 minutes')
-    #
-    # def test_example_5(self):
-    #     self.assertEqual('', 'Finished at: t=11 minutes')
-
-
 class WhenTestingRegister(unittest.TestCase):
 
     def setUp(self):
+        self.store = Registers()
         self.customers = {'1': [('2', 'A')], '2': [('1', 'A')]}
         self.num_customers = 2
         self.num_registers = 1
-        self.store = Registers(self.num_registers, self.num_customers,
-                               self.customers)
         self.store._init_registers()
 
     def test_queue_customer(self):
         self.store.time = 8
+        self.num_customers = 1
+        self.num_registers = 1
         self.store._queue_customer([2, 'A'])
         self.assertDictEqual(self.store.registers[0],
                              {'rate': 2, 'pop_time': 12, 'line': deque([2])})
 
     def test_update_registers_initialized_registered(self):
-        store = Registers(1, 1, {})
+        store = Registers()
+        store.num_registers = 1
+        store._init_registers()
         store._update_registers()
-        self.assertDictEqual(self.store.registers[0],
+        self.assertDictEqual(store.registers[0],
                              {'rate': 2, 'pop_time': -1, 'line': deque([])})
 
     def test_update_register_time_to_pop_customer(self):
@@ -72,6 +51,28 @@ class WhenTestingRegister(unittest.TestCase):
         self.store._update_register(self.store.registers[0])
         self.assertDictEqual(self.store.registers[0],
                              {'rate': 2, 'pop_time': 12, 'line': deque([2])})
+
+    def test_find_shortest_line(self):
+        store = Registers()
+        store.time = 0
+        store.num_customers = 5
+        store.num_registers = 2
+        store._init_registers()
+        store._queue_customer([2, 'A'])
+        length, shortest_line = store._find_shortest_line()
+        self.assertEqual(shortest_line, 1)
+
+    def test_find_last_customer_with_least_items_empty_line(self):
+        store = Registers()
+        store.time = 0
+        store.num_customers = 5
+        store.num_registers = 2
+        store._init_registers()
+        store._queue_customer([2, 'A'])
+        store._queue_customer([2, 'A'])
+        length, shortest_line = store._find_shortest_line()
+        self.assertEqual(shortest_line, 0)
+
 
 if __name__ == '__main__':
     unittest.main()

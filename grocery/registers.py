@@ -1,3 +1,5 @@
+
+import sys
 from collections import deque
 
 
@@ -12,46 +14,46 @@ class Registers(object):
     (for either kind of customer).
 
     arrival tie: fewest items, if tie on item num A then B
-
     """
 
-    def __init__(self, num_registers, num_customers, customers):
+    def __init__(self):
+        """ Constructor for cash registers """
+        self.num_registers = 0
+        self.num_customers = 0
         self.time = 0
-        self.customers = customers
-        self.num_customers = num_customers
-        self.num_registers = num_registers
+        self.customers = dict()
         self.registers = []
-        self._init_registers()
 
-    def completion_time(self):
-        print("Finished at: t={0} minutes".format(self.time))
+    def load_file(self, argv):
+        self.num_registers, self.num_customers, self.customers = \
+            _extract_data_from_file()
+
+    def get_time(self):
+        """ Returns int time of the Registers
+        :return: (int)
+        """
+        return self.time
 
     def process_customers(self):
         """ Processes the customers """
 
-        print(self.customers)
+        # initialize registers before we rock and roll
+        self._init_registers()
 
-        while self.time != 8:
+        while True:
             self._update_registers()
-            print ("num customers {0}".format(self.num_customers))
-            print ("Time {0}".format(self.time))
-            print (self.registers)
             if self.time in self.customers:
                 for customer in self.customers[self.time]:
                     self._queue_customer(customer)
+            if self.num_customers == 0:
+                break
             self.time += 1
-        self.completion_time()
-        #  should be cleared
-        print(self.registers)
 
     def _queue_customer(self, customer):
         """ Logic for queueing customers based on number of items and type
         :param customer: (array)
         """
 
-        # first come first serve customers should be ordered,
-        # A takes precedence over B
-        # find empty and shortest lines
         length, short_line = self._find_shortest_line()
 
         # length is zero means empty or criterion for queueing 'A' type
@@ -67,25 +69,21 @@ class Registers(object):
             self.registers[least_items]['line'].appendleft(customer[0])
 
     def _init_registers(self):
-        """ Hidden method to set up the cash registers including trainee """
+        """ set up the cash registers including trainee """
         for x in range(0, self.num_registers - 1):
-            self.registers.append(create_register())
+            self.registers.append(_create_register())
         # add trainee register
-        self.registers.append(create_register(rate=2))
+        self.registers.append(_create_register(rate=2))
 
     def _update_register(self, register):
-        """ Updates register based on time
-        :param register: (dict)
-        """
+        """ Updates register based on time """
         if register['pop_time'] == self.time:
             register['line'].pop()
             self.num_customers -= 1
             self._reset_pop_time(register)
 
     def _reset_pop_time(self, register):
-        """ Resets pop time if needed
-        :param register: (dict)
-        """
+        """ Resets pop time if needed """
         if len(register['line']) == 0:
             register['pop_time'] = -1
         else:
@@ -93,11 +91,9 @@ class Registers(object):
                 register['rate'] * register['line'][-1] + self.time
 
     def _update_registers(self):
-        """
-        check time against the register's pop_times and if customer gets
+        """ check time against the register's pop_times and if customer gets
         popped, decrement the number of customers to let us know when we're
         finished looping
-        :return:
         """
         for register in self.registers:
             self._update_register(register)
@@ -120,12 +116,46 @@ class Registers(object):
                                   in enumerate(self.registers))
         return least_items
 
-
+###########################################################################
 # Static method(s)
+###########################################################################
 
-def create_register(rate=1):
+
+def _create_register(rate=1):
     """ Creates a default register, chose dict over class for simplicities sake
-    :param rate:
-    :return:
+    :param rate: (int)
+    :return: (dict)
     """
     return dict({'rate': rate, 'pop_time': -1, 'line': deque([])})
+
+
+def _extract_data_from_file():
+    """ takes text file input first line is number of registers. All following
+    lines are separated into three space divided columns in the order of
+    (1)Customer type A/B (2) Line choosing time (3) number of items
+    :return: (int, int, dict)
+    """
+    # extract data from input file
+    with open(sys.argv[1], 'r') as in_file:
+        # get num registers
+        num_registers = int(in_file.readline())
+        num_customers = 0
+        customers = dict()
+        # store and order the rest of the lines in the file...
+        #TODO: generator seems out of the question.
+        #TODO: data might not be in sequential order
+        for line in in_file:
+            customer = line.split()
+            if int(customer[1]) in customers:
+                customers[int(customer[1])].append([int(customer[2]),
+                                                    customer[0]])
+            else:
+                customers[int(customer[1])] = [[int(customer[2]), customer[0]]]
+            num_customers += 1
+    in_file.close()
+
+    # sort by customer type
+    for key in customers:
+        customers[key].sort(key=lambda x: x[1])
+
+    return num_registers, num_customers, customers
