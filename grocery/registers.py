@@ -142,8 +142,8 @@ def _extract_data_from_file():
         num_customers = 0
         customers = dict()
         # store and order the rest of the lines in the file...
-        #TODO: generator seems out of the question.
-        #TODO: data might not be in sequential order
+        # TODO: generator seems out of the question.
+        # TODO: data might not be in sequential order
         for line in in_file:
             customer = line.split()
             if int(customer[1]) in customers:

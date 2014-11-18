@@ -52,7 +52,7 @@ class WhenTestingRegister(unittest.TestCase):
         self.assertDictEqual(self.store.registers[0],
                              {'rate': 2, 'pop_time': 12, 'line': deque([2])})
 
-    def test_find_shortest_line(self):
+    def test_find_shortest_line_tie_goes_to_empty(self):
         store = Registers()
         store.time = 0
         store.num_customers = 5
@@ -62,7 +62,7 @@ class WhenTestingRegister(unittest.TestCase):
         length, shortest_line = store._find_shortest_line()
         self.assertEqual(shortest_line, 1)
 
-    def test_find_last_customer_with_least_items_empty_line(self):
+    def test_find_shortest_line_empty_line(self):
         store = Registers()
         store.time = 0
         store.num_customers = 5
@@ -70,6 +70,31 @@ class WhenTestingRegister(unittest.TestCase):
         store._init_registers()
         store._queue_customer([2, 'A'])
         store._queue_customer([2, 'A'])
+        length, shortest_line = store._find_shortest_line()
+        self.assertEqual(shortest_line, 0)
+
+    def test_find_shortest_line(self):
+        store = Registers()
+        store.time = 0
+        store.num_customers = 5
+        store.num_registers = 2
+        store._init_registers()
+        store._queue_customer([2, 'A'])
+        store._queue_customer([2, 'A'])
+        store._queue_customer([2, 'A'])
+        length, shortest_line = store._find_shortest_line()
+        self.assertEqual(shortest_line, 1)
+
+    def test_find_last_customer_with_least_items(self):
+        store = Registers()
+        store.time = 0
+        store.num_customers = 5
+        store.num_registers = 2
+        store._init_registers()
+        store._queue_customer([2, 'A'])
+        store._queue_customer([2, 'A'])
+        store._queue_customer([3, 'A'])
+        store._queue_customer([6, 'A'])
         length, shortest_line = store._find_shortest_line()
         self.assertEqual(shortest_line, 0)
 

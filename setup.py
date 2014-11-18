@@ -1,4 +1,3 @@
-__author__ = 'aelkikhia'
 
 # -*- coding: utf-8 -*-exit
 try:

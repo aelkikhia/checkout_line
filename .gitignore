@@ -16,7 +16,7 @@ grocery.egg-info/
 *~
 
 # other shenanigans
-.idea
+.idea/
 *.iml
 *.xml
 
