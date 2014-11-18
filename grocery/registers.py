@@ -135,27 +135,29 @@ def _extract_data_from_file():
     (1)Customer type A/B (2) Line choosing time (3) number of items
     :return: (int, int, dict)
     """
-    # extract data from input file
-    with open(sys.argv[1], 'r') as in_file:
-        # get num registers
-        num_registers = int(in_file.readline())
-        num_customers = 0
-        customers = dict()
-        # store and order the rest of the lines in the file...
-        # TODO: generator seems out of the question.
-        # TODO: data might not be in sequential order
-        for line in in_file:
-            customer = line.split()
-            if int(customer[1]) in customers:
-                customers[int(customer[1])].append([int(customer[2]),
-                                                    customer[0]])
-            else:
-                customers[int(customer[1])] = [[int(customer[2]), customer[0]]]
-            num_customers += 1
-    in_file.close()
+    try:
+        # extract data from input file
+        with open(sys.argv[1], 'r') as in_file:
+            # get num registers
+            num_registers = int(in_file.readline())
+            num_customers = 0
+            customers = dict()
+            # store and order the rest of the lines in the file...
+            # TODO: generator seems out of the question.
+            # TODO: data might not be in sequential order
+            for line in in_file:
+                customer = line.split()
+                if int(customer[1]) in customers:
+                    customers[int(customer[1])].append([int(customer[2]),
+                                                        customer[0]])
+                else:
+                    customers[int(customer[1])] = [[int(customer[2]), customer[0]]]
+                num_customers += 1
+        in_file.close()
+        # sort by customer type
+        for key in customers:
+            customers[key].sort(key=lambda x: x[1])
 
-    # sort by customer type
-    for key in customers:
-        customers[key].sort(key=lambda x: x[1])
-
-    return num_registers, num_customers, customers
+        return num_registers, num_customers, customers
+    except IOError:
+        print 'cannot open', sys.argv[1]
