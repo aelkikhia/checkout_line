@@ -15,7 +15,7 @@ class WhenTestingRegister(unittest.TestCase):
 
     def setUp(self):
         self.store = Registers()
-        self.customers = {'1': [('2', 'A')], '2': [('1', 'A')]}
+        self.customers = {'1': [['2', 'A']], '2': [['1', 'A']]}
         self.num_customers = 2
         self.num_registers = 1
         self.store._init_registers()
@@ -72,7 +72,6 @@ class WhenTestingRegister(unittest.TestCase):
         store._queue_customer([2, 'A'])
         length, shortest_line = store._find_shortest_line()
         self.assertEqual(shortest_line, 0)
-
 
 if __name__ == '__main__':
     unittest.main()
